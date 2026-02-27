@@ -1,0 +1,89 @@
+version: 2
+
+
+sources:
+  - name: public
+    description: "Raw application data from the Postgres database"
+    tables:
+      - name: users
+        description: "Core user registry containing one row per registered user with their profile attributes. Serves as the central dimension table joined by sessions, subscriptions, and payments."
+        columns:
+          - name: user_id
+            description: "Primary Key - Unique identifier for each registered user"
+            tests:
+              - unique
+              - not_null
+          - name: signup_date
+            description: "Timestamp when the user first created their account, used for cohort analysis and time-to-convert calculations"
+          - name: country
+            description: "Geographic region of the user segmented into US, EU, India, or Rest — used for regional performance reporting and localization decisions"
+          - name: device_type
+            description: "Platform the user registered from (iOS, Android, Web) — indicates acquisition channel and drives platform-specific product decisions"
+
+      - name: subscriptions
+        description: "Tracks each subscription lifecycle per user, including plan tier, activation and expiration dates, and current status. A user may have multiple subscription records over time as they upgrade, downgrade, or churn."
+        columns:
+          - name: subscription_id
+            description: "Primary Key - Unique identifier for each subscription record"
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: "Foreign key referencing users table — links the subscription to the owning user"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('public', 'users')
+                  field: user_id
+          - name: plan
+            description: "Subscription tier the user is enrolled in (free, monthly, annual) — determines pricing and feature access, key driver for revenue segmentation"
+          - name: start_date
+            description: "Timestamp when the subscription was activated, marks the beginning of the billing cycle"
+          - name: end_date
+            description: "Timestamp when the subscription ended or was terminated — NULL indicates the subscription is still active"
+          - name: status
+            description: "Current lifecycle state of the subscription (active, canceled, expired) — used to measure churn, retention, and reactivation rates"
+
+      - name: sessions
+        description: "Event-level log of user engagement sessions capturing when, how long, and what type of content users interacted with. Primary source for computing engagement metrics like DAU, WAU, MAU and session depth."
+        columns:
+          - name: session_id
+            description: "Primary Key - Unique identifier for each recorded session event"
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: "Foreign key referencing users table — identifies which user initiated the session"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('public', 'users')
+                  field: user_id
+          - name: session_date
+            description: "Calendar date when the session took place, used to aggregate daily engagement and compute active user counts"
+          - name: duration_minutes
+            description: "Length of the session in minutes — measures depth of engagement per visit and feeds into average session duration KPIs"
+          - name: activity_type
+            description: "Category of content the user consumed during the session (browse, read, listen) — enables content-mix analysis and product feature prioritization"
+
+      - name: payments
+        description: "Transactional record of every payment collected, linked to the subscription it funds. Core table for revenue reporting, ARPU calculations, and payment method analytics."
+        columns:
+          - name: payment_id
+            description: "Primary Key - Unique identifier for each payment transaction"
+            tests:
+              - unique
+              - not_null
+          - name: subscription_id
+            description: "Foreign key referencing subscriptions table — ties each payment to the subscription being billed"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('public', 'subscriptions')
+                  field: subscription_id
+          - name: payment_date
+            description: "Timestamp when the payment was processed, used for revenue recognition, MRR trending, and cohort-based LTV analysis"
+          - name: amount_usd
+            description: "Total payment amount charged to the user in US Dollars — the atomic unit for all revenue aggregations (MRR, ARR, total revenue)"
+          - name: method
+            description: "Payment instrument used to complete the transaction (card, paypal, apple_pay, google_pay) — informs payment funnel optimization and regional payment preferences"
