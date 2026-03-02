@@ -34,20 +34,36 @@ def get_dataframe_summary(df: pd.DataFrame) -> str:
         A text summary of the DataFrame.
     """
     missing_stats = (df.isna().sum() / len(df) * 100).sort_values(ascending=False)
-    missing_summary = "\n".join([f"{col}: {val:.2f}%" for col, val in missing_stats.items()])
-    
-    column_types = "\n".join([f"{col}: {dtype}" for col, dtype in df.dtypes.items()])
-    
-    summary = f"""
-        Dataset Summary:
-        ----------------
-        Column Data Types:
-        {column_types}
+    missing_summary = "\n  ".join([f"{col}: {val:.2f}%" for col, val in missing_stats.items()])
 
-        Missing Value Percentage:
-        {missing_summary}"""
+    column_types = "\n  ".join([f"{col}: {dtype}" for col, dtype in df.dtypes.items()])
 
-    return summary.strip()
+    # For outlier detection, we need to calcualte Percentiles and IQR in numerical cols
+    numerical_cols = df.select_dtypes(include="number").columns
+    outlier_stats = {}
+    for col in numerical_cols:
+        Q1 = df[col].quantile(0.05)
+        Q3 = df[col].quantile(0.95)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        df[col] = df[col].apply(lambda x: lower_bound if x < lower_bound else upper_bound if x > upper_bound else x)
+        outlier_stats[col] = f"Lower Bound: {lower_bound:.2f}, Upper Bound: {upper_bound:.2f}"
+        
+    outlier_summary = "\n  ".join([f"{col}: {val}" for col, val in outlier_stats.items()])
+
+    summary = (
+        "Dataset Summary:\n"
+        "----------------\n"
+        "Column Data Types:\n"
+        f"  {column_types}\n\n"
+        "Missing Value Percentage:\n"
+        f"  {missing_summary}\n\n"
+        "Outlier Stats (numerical cols):\n"
+        f"  {outlier_summary}"
+    )
+
+    return summary
 
 
 def execute_agent_code(state, data_key, code_snippet_key, result_key, error_key, agent_function_name):
