@@ -99,3 +99,14 @@ docker run -p 8502:8502 --env-file .env data-cleaning-agent
 ```
 
 Then open http://localhost:8502 in your browser.
+
+## Deploy to Render
+
+1. Push this project to a GitHub/GitLab repo
+2. Go to [Render Dashboard](https://dashboard.render.com/) and click **New > Web Service**
+3. Connect your repo and select the `03-data-cleaning-agent-2` directory as the root
+4. Render will auto-detect the `Dockerfile`
+5. Add the `OPENAI_API_KEY` environment variable under **Environment > Environment Variables**
+6. Deploy
+
+Alternatively, use the included `render.yaml` blueprint: click **New > Blueprint** and point to the repo.
