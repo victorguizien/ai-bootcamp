@@ -2,6 +2,7 @@
 
 import re
 import logging
+import textwrap
 import pandas as pd
 from langchain_core.output_parsers import BaseOutputParser
 
@@ -19,7 +20,7 @@ class PythonOutputParser(BaseOutputParser):
         return text
 
 
-def get_dataframe_summary(df: pd.DataFrame) -> str:
+def get_dataframe_summary(df: pd.DataFrame, indent: int = 0) -> str:
     """
     Generate a simple summary of a DataFrame for the LLM.
     
@@ -53,8 +54,6 @@ def get_dataframe_summary(df: pd.DataFrame) -> str:
     outlier_summary = "\n  ".join([f"{col}: {val}" for col, val in outlier_stats.items()])
 
     summary = (
-        "Dataset Summary:\n"
-        "----------------\n"
         "Column Data Types:\n"
         f"  {column_types}\n\n"
         "Missing Value Percentage:\n"
@@ -63,7 +62,7 @@ def get_dataframe_summary(df: pd.DataFrame) -> str:
         f"  {outlier_summary}"
     )
 
-    return summary
+    return textwrap.indent(summary, " " * indent)
 
 
 def execute_agent_code(state, data_key, code_snippet_key, result_key, error_key, agent_function_name):

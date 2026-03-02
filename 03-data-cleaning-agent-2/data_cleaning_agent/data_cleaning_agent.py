@@ -207,6 +207,7 @@ def make_lightweight_data_cleaning_agent(
             1. Remove columns with more than 40% missing values
             2. Impute missing values (mean for numeric, mode for categorical)
             3. Remove duplicate rows
+            4. Remove outliers (numerical cols) outside of p05 and p95
 
             User Instructions:
             {user_instructions}
