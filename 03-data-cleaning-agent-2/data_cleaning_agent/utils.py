@@ -74,7 +74,6 @@ def get_dataframe_summary(df: pd.DataFrame, indent: int = 0) -> str:
         IQR = Q3 - Q1
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
-        df[col] = df[col].apply(lambda x: lower_bound if x < lower_bound else upper_bound if x > upper_bound else x)
         outlier_stats[col] = f"Lower Bound: {lower_bound:.2f}, Upper Bound: {upper_bound:.2f}"
         
     outlier_summary = "\n  ".join([f"{col}: {val}" for col, val in outlier_stats.items()])
