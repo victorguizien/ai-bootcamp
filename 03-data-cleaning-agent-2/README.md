@@ -109,4 +109,5 @@ Then open http://localhost:8502 in your browser.
 5. Add the `OPENAI_API_KEY` environment variable under **Environment > Environment Variables**
 6. Deploy
 
-Alternatively, use the included `render.yaml` blueprint: click **New > Blueprint** and point to the repo.
+
+<video controls src="assets/videos/render1.mp4" width="840" height="560"></video>   
