@@ -89,3 +89,13 @@ Comments:
 
 ### Result (png)
 ![Streamlit app](assets/images/img3.png)
+
+## Docker
+
+```bash
+cd 03-data-cleaning-agent-2
+docker build -t data-cleaning-agent .
+docker run -p 8502:8502 --env-file .env data-cleaning-agent
+```
+
+Then open http://localhost:8502 in your browser.
