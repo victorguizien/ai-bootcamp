@@ -17,7 +17,7 @@ As I didn't really understand the code, I decided to create a simple notebook th
 
 See `test.ipynb` for more details.
 
-## Improvements
+## Improvements to data agent
 
 1. Add outlier summary in the dataframe summary function
 
@@ -55,3 +55,37 @@ Comments:
 
 
 2. String normalization + dtype correction
+   - Added in the prompt via:
+     - `5. Normalize string columns (strip whitespace, normalize casing)`
+   - Added some examples in dataframe summary function
+```python
+    # Sample unique values for string columns
+    string_cols = df.select_dtypes(include="object").columns
+    string_samples = {}
+    for col in string_cols:
+        unique_vals = df[col].dropna().unique()[:10]
+        string_samples[col] = f"{list(unique_vals)}"
+    string_summary = "\n  ".join([f"{col}: {val}" for col, val in string_samples.items()])
+```
+
+## Improvements to streamlit app
+
+1. Add raw data preview
+2. Add data quality metrics
+3. Add custom instructions
+4. Add generated code visibility with a togle
+5. Add a before and after comparison
+6. Error handling when agent fails
+
+### Before cleaning
+![Streamlit app](assets/images/img1.png)
+
+### Adding a custom instruction
+![Streamlit app](assets/images/img2.png)
+
+### Result (gif)
+
+![Streamlit app](assets/images/gif3.gif)
+
+### Result (png)
+![Streamlit app](assets/images/img3.png)
