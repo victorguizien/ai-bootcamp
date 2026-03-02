@@ -109,6 +109,6 @@ Then open http://localhost:8502 in your browser.
 5. Add the `OPENAI_API_KEY` environment variable under **Environment > Environment Variables**
 6. Deploy
 
-**Video**:
+**GIF**:
 
-<video controls src="assets/videos/render1.mp4" width="840" height="560"></video>   
+![Render](assets/images/render1.gif)
