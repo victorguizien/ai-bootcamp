@@ -11,6 +11,7 @@ from langgraph.graph import StateGraph, END
 
 from .utils import (
     PythonOutputParser,
+    DATA_CLEANING_PROMPT_TEMPLATE,
     get_dataframe_summary,
     execute_agent_code,
     fix_agent_code,
@@ -198,33 +199,8 @@ def make_lightweight_data_cleaning_agent(
 
         dataset_summary = get_dataframe_summary(df)
         
-        # TODO: Expand this prompt with more detailed cleaning instructions
         data_cleaning_prompt = PromptTemplate(
-            template="""
-            You are a Data Cleaning Agent. Create a {function_name}() function to clean the data.
-
-            Basic Cleaning Steps to implement:
-            1. Remove columns with more than 40% missing values
-            2. Impute missing values (mean for numeric, mode for categorical)
-            3. Remove duplicate rows
-            4. Remove outliers (numerical cols) outside of p05 and p95
-
-            User Instructions:
-            {user_instructions}
-
-            Dataset Summary:
-            {all_datasets_summary}
-
-            Return Python code in ```python``` format with a single function:
-
-            def {function_name}(data_raw):
-                import pandas as pd
-                import numpy as np
-                # Your cleaning code here
-                return data_cleaned
-
-            Important: Ensure fit_transform() outputs are flattened with .ravel() when assigning to DataFrame columns.
-            """,
+            template=DATA_CLEANING_PROMPT_TEMPLATE,
             input_variables=["user_instructions", "all_datasets_summary", "function_name"]
         )
 

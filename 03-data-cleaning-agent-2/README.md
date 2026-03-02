@@ -20,3 +20,38 @@ See `test.ipynb` for more details.
 ## Improvements
 
 1. Add outlier summary in the dataframe summary function
+
+Comments:
+    - In the prompt, using 
+       -  "4. Remove outliers (numerical cols) outside of p05 and p95" 
+    Will of course create a function where those percentiles are calcualted. But then it got me thinknig, why do we even bother passing the dataframe summary to the agent?
+
+   - I then tried:
+     - "4. Remove outliers (numerical cols) outside of anomalous range"
+    And unsurprisingly, the function wrote had
+
+
+```python
+    # Step 4: Remove outliers (numerical cols) outside of anomalous range
+    outlier_bounds = {
+        'age': (3.05, 64.25),
+        'salary': (7375.00, 109175.00),
+        'experience': (-18.70, 35.70)
+    }
+
+    for col, (lower, upper) in outlier_bounds.items():
+        if col in data_cleaned.columns:
+            data_cleaned = data_cleaned[(data_cleaned[col] >= lower) & (data_cleaned[col] <= upper)]
+```
+
+    Using the same values that are given in the prompt 
+
+```
+    Outlier Stats (numerical cols):
+      age: Lower Bound: 3.05, Upper Bound: 64.25
+      salary: Lower Bound: 7375.00, Upper Bound: 109175.00
+      experience: Lower Bound: -18.70, Upper Bound: 35.70
+```
+
+
+2. String normalization + dtype correction

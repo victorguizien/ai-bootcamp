@@ -8,6 +8,32 @@ from langchain_core.output_parsers import BaseOutputParser
 
 logger = logging.getLogger(__name__)
 
+DATA_CLEANING_PROMPT_TEMPLATE = """\
+You are a Data Cleaning Agent. Create a {function_name}() function to clean the data.
+
+Basic Cleaning Steps to implement:
+1. Remove columns with more than 40% missing values
+2. Impute missing values (mean for numeric, mode for categorical)
+3. Remove duplicate rows
+4. Remove outliers (numerical cols) outside of p05 and p95
+5. Normalize string columns (strip whitespace, normalize casing)
+
+User Instructions:
+{user_instructions}
+
+Dataset Summary:
+{all_datasets_summary}
+
+Return Python code in ```python``` format with a single function:
+
+def {function_name}(data_raw):
+    import pandas as pd
+    import numpy as np
+    # Your cleaning code here
+    return data_cleaned
+
+Important: Ensure fit_transform() outputs are flattened with .ravel() when assigning to DataFrame columns."""
+
 
 class PythonOutputParser(BaseOutputParser):
     """Extract Python code from LLM responses."""
@@ -53,13 +79,23 @@ def get_dataframe_summary(df: pd.DataFrame, indent: int = 0) -> str:
         
     outlier_summary = "\n  ".join([f"{col}: {val}" for col, val in outlier_stats.items()])
 
+    # Sample unique values for string columns
+    string_cols = df.select_dtypes(include="object").columns
+    string_samples = {}
+    for col in string_cols:
+        unique_vals = df[col].dropna().unique()[:10]
+        string_samples[col] = f"{list(unique_vals)}"
+    string_summary = "\n  ".join([f"{col}: {val}" for col, val in string_samples.items()])
+
     summary = (
         "Column Data Types:\n"
         f"  {column_types}\n\n"
         "Missing Value Percentage:\n"
         f"  {missing_summary}\n\n"
         "Outlier Stats (numerical cols):\n"
-        f"  {outlier_summary}"
+        f"  {outlier_summary}\n\n"
+        "String Column Samples:\n"
+        f"  {string_summary}"
     )
 
     return textwrap.indent(summary, " " * indent)
