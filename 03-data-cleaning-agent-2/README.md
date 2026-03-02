@@ -19,3 +19,4 @@ See `test.ipynb` for more details.
 
 ## Improvements
 
+1. Add outlier summary in the dataframe summary function
