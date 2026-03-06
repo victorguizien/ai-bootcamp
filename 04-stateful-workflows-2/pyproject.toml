@@ -13,9 +13,17 @@ langgraph = "~0.2.0"
 langchain = "~0.3.0"
 langchain-openai = "~0.2.0"
 python-dotenv = "^1.0.0"
-data-cleaning-agent = { path = "../data-cleaning-agent", develop = true }
-eda-workflow = { path = "../eda-workflow", develop = true }
+data-cleaning-agent = { path = "../03-data-cleaning-agent-2/data-cleaning-agent", develop = true }
+eda-workflow = { path = "../04-stateful-workflows/eda-workflow", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "dotenv>=0.9.9",
+    "langchain-openai>=1.1.10",
+    "langgraph>=1.0.10",
+    "pandas>=3.0.1",
+]

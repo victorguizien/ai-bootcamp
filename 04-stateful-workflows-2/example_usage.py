@@ -1,5 +1,12 @@
 import logging
+import sys
 import warnings
+from pathlib import Path
+
+# Make sibling project packages importable.
+_root = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_root / "03-data-cleaning-agent-2"))
+sys.path.insert(0, str(_root / "04-stateful-workflows"))
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 logging.basicConfig(level=logging.INFO)
