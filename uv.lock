@@ -7,6 +7,35 @@ resolution-markers = [
     "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
+[manifest]
+members = [
+    "04-stateful-workflows",
+    "ai-bootcamp",
+]
+
+[[package]]
+name = "04-stateful-workflows"
+version = "0.1.0"
+source = { virtual = "04-stateful-workflows" }
+dependencies = [
+    { name = "langchain-core" },
+    { name = "langchain-openai" },
+    { name = "langgraph" },
+    { name = "pandas" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "langchain-core", specifier = ">=0.3" },
+    { name = "langchain-openai", specifier = ">=0.3" },
+    { name = "langgraph", specifier = ">=0.2" },
+    { name = "pandas", specifier = ">=2.0" },
+    { name = "pydantic", specifier = ">=2.0" },
+    { name = "python-dotenv", specifier = ">=1.0" },
+]
+
 [[package]]
 name = "ai-bootcamp"
 version = "0.1.0"
